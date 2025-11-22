@@ -29,6 +29,7 @@ body {
     overflow: hidden; /* 禁止 Body 捲動 */
 }
 
+/* === 新增/修改導航按鈕樣式 START === */
 .map-button {
     display: inline-block;
     padding: 8px 10px; /* 稍微縮小按鈕 */
@@ -42,7 +43,6 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, transform 0.1s;
     text-align: center;
-    margin-bottom: 5px; /* 關鍵修改：增加按鈕間距 */
 }
 
 .map-button:active {
@@ -51,12 +51,9 @@ body {
 }
 
 .nav-button-wrapper {
-    flex-basis: 25%;
+    flex-basis: 25%; /* 佔據 25% 空間 */
     flex-shrink: 0;
     text-align: left;
-    display: flex; /* 關鍵修改：讓按鈕垂直堆疊 */
-    flex-direction: column; 
-    justify-content: center;
 }
 /* === 新增/修改導航按鈕樣式 END === */
 
@@ -145,18 +142,20 @@ svg {
 
 /* === 5. 底部控制區 (搜尋框向右偏移) [替換此區] === */
 .control-panel {
+    /* 關鍵修改：使用 Flexbox 讓按鈕和搜尋框並排 */
     display: flex;
     justify-content: space-between;
     align-items: center;
     
     position: relative; 
-    padding: 15px 25px 25px 25px; 
+    padding: 15px 25px 25px 25px; /* 標準 padding */
     background: white; border-top: 1px solid rgba(0,0,0,0.05); 
     z-index: 30; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
     flex-shrink: 0; 
 }
 
 .search-container { 
+    /* 關鍵修改：佔據 75% 空間並靠右 */
     flex-basis: 70%;
     flex-shrink: 0;
     position: relative; 
@@ -402,9 +401,6 @@ svg {
             <a id="mapsLink" href="#" target="_blank" class="map-button">
                 導航會場
             </a>
-            <a id="calendarLink" href="#" target="_blank" class="map-button">
-                加入行程
-            </a>
         </div>
 
         <div class="search-container">
@@ -421,11 +417,7 @@ svg {
 <script>
 const VENUE_ADDRESS = '麗尊酒店五樓國宴廳'; // *** 請替換成你的婚宴會場地址或名稱！ ***
 const MAPS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(VENUE_ADDRESS)}`;
-const EVENT_TITLE = '呂尚恩＆林怡姿婚禮';
-const START_DATE = '20251129T173000';
-const END_DATE = '20251129T203000'; // 假設持續 3 小時
-const TIMEZONE = 'Asia/Taipei'; // 台灣時區
-const CALENDAR_URL = `http://googleusercontent.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(EVENT_TITLE)}&dates=${START_DATE}/${END_DATE}&ctz=${TIMEZONE}&location=${encodeURIComponent(VENUE_ADDRESS)}`;
+
 // === 1. 賓客資料 ===
 const guestDataRaw = [
     { table: "主桌", names: ["曾宗敏 舅舅", "潘亮如 舅媽", "曾美珠 大姨", "呂武南", "曾蕉治", "林添裕", "陳姿靚", "林森 爺爺", "黃桃 奶奶", "呂尚恩", "林怡姿", "林秀鳳 姑姑"] },
@@ -545,14 +537,9 @@ function handleSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const mapsLink = document.getElementById('mapsLink'); 
-    const calendarLink = document.getElementById('calendarLink'); // 取得新的行事曆按鈕
-    
+    const mapsLink = document.getElementById('mapsLink'); // <--- 確保這行存在
     if (mapsLink) {
         mapsLink.href = MAPS_URL;
-    }
-    if (calendarLink) {
-        calendarLink.href = CALENDAR_URL; // 設定行事曆連結
     }
     drawTables();
 });
