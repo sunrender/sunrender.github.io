@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
 <title>20251129 呂林府喜宴</title>
 <style>
 /* === 1. 喜帖風格色系 === */
@@ -15,22 +15,21 @@
     --border-gold: #C5A065;
 }
 
-/* === 關鍵修正 1：設定 Body 為滿版，禁止捲動 === */
 body {
     font-family: "Helvetica", "Noto Serif TC", "Microsoft JhengHei", serif;
     background-color: #e0e0e0;
     margin: 0; padding: 0;
     color: var(--text-dark);
+    /* 關鍵：使用 dvh (動態視口高度) 確保填滿手機螢幕 */
+    height: 100dvh; 
     width: 100vw;
-    height: 100vh; /* Fallback */
-    height: 100dvh; /* 關鍵：動態視窗高度，解決手機網址列遮擋問題 */
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden; /* 禁止整個網頁捲動，只允許地圖區捲動 */
+    overflow: hidden; /* 禁止 Body 捲動 */
 }
 
-/* === 2. 卡片容器 (Flex 垂直佈局核心) === */
+/* === 2. 卡片容器 (改用 Grid 佈局) === */
 .invitation-card {
     position: relative;
     background: var(--bg-cream);
@@ -44,22 +43,21 @@ body {
     outline: 1px solid #d0d0d0;
     box-shadow: 0 15px 40px rgba(0,0,0,0.15);
 
-    /* 佈局核心：垂直排列 */
-    display: flex;
-    flex-direction: column; 
-    overflow: hidden; /* 確保圓角不被內容切斷 */
+    /* 佈局核心：CSS Grid */
+    display: grid;
+    /* 定義三列：標題(自動) / 地圖(剩餘空間) / 搜尋框(自動) */
+    grid-template-rows: auto 1fr auto; 
+    overflow: hidden; 
 }
 
-/* === 3. 標題區 (第一優先級：固定頂部) === */
+/* === 3. 標題區 (Grid 第一列) === */
 .header-section {
     text-align: center;
     padding: 15px 0 10px 0;
     z-index: 20;
-    background: var(--bg-cream); /* 確保背景不透明 */
-    
-    /* 關鍵：禁止壓縮，確保高度穩定 */
-    flex-shrink: 0; 
-    flex-basis: auto;
+    background: var(--bg-cream);
+    /* 確保標題不會被壓縮 */
+    min-height: max-content;
 }
 
 .header-title {
@@ -76,23 +74,16 @@ body {
     margin-top: 5px;
 }
 
-/* === 4. 地圖區 (填滿剩餘空間) === */
+/* === 4. 地圖區 (Grid 第二列 - 自動伸縮) === */
 .map-viewport {
-    /* 關鍵：佔據所有剩餘空間 */
-    flex-grow: 1;
-    flex-shrink: 1;
-    min-height: 0; /* Flexbox 捲動的必要設定 */
-    
     position: relative;
-    overflow-y: auto; /* 只有這裡可以捲動 */
-    overflow-x: hidden;
+    overflow: auto; /* 允許內部捲動 */
+    background-color: #fffcf5;
     
-    /* 讓內容置中 */
+    /* 讓 SVG 在區域內居中 */
     display: flex;
-    justify-content: center;
-    /* align-items: center;  <-- 建議移除垂直置中，讓地圖從上方開始長，避免長地圖被切頭 */
-    
-    background-color: #fffcf5; /* 確保捲動時背景一致 */
+    flex-direction: column;
+    justify-content: center; 
 }
 
 /* 隱藏 Scrollbar */
@@ -100,47 +91,45 @@ body {
 
 svg {
     width: 100%;
-    height: auto; /* 保持比例 */
-    max-width: 100%;
+    height: auto;
     display: block;
     opacity: 0.95;
-    margin: auto 0; /* 如果地圖比畫面短，垂直置中；比畫面長，則正常捲動 */
+    /* 確保 SVG 最小高度，避免鍵盤彈出時壓得太扁 */
+    min-height: 300px; 
 }
 
 /* 底部單一裝飾圖片 */
 .map-decoration-single {
     position: absolute;
-    bottom: 0; /* 貼齊地圖區底部 */
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     max-width: 80%;
-    max-height: 120px;
+    max-height: 100px; /* 稍微縮小以免擋到太多 */
     height: auto;
     z-index: 15;
     pointer-events: none;
     opacity: 1;
 }
 
-/* === 5. 底部控制區 (第二優先級：固定底部) === */
+/* === 5. 底部控制區 (Grid 第三列) === */
 .control-panel {
     position: relative;
-    padding: 15px 25px 25px 25px; /* 上 右 下 左 */
+    padding: 15px 25px 25px 25px;
     background: white;
     border-top: 1px solid rgba(0,0,0,0.05);
     z-index: 30;
     box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-    
-    /* 關鍵：禁止壓縮，確保高度穩定 */
-    flex-shrink: 0;
+    /* 確保搜尋框不會被壓縮 */
+    min-height: max-content;
 }
 
 .search-container { position: relative; }
 
-/* 搜尋框 */
 .search-input {
     width: 100%;
     padding: 12px 20px;
-    font-size: 16px; /* 16px 防止 iOS 自動放大 */
+    font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 30px;
     background: #fcfcfc;
@@ -156,10 +145,10 @@ svg {
     box-shadow: 0 4px 15px rgba(232, 173, 170, 0.2);
 }
 
-/* 下拉選單 (往上彈出) */
+/* 下拉選單 */
 .search-results {
     position: absolute;
-    bottom: 100%; /* 位於輸入框上方 */
+    bottom: 100%; 
     left: 0;
     width: 100%;
     max-height: 0;
@@ -173,7 +162,7 @@ svg {
     z-index: 40;
 }
 .search-results.open {
-    max-height: 200px; /* 限制高度 */
+    max-height: 180px; /* 稍微縮小高度，避免擋住鍵盤 */
     border-color: var(--theme-pink);
 }
 
@@ -191,7 +180,7 @@ svg {
 }
 .result-item:last-child { border-bottom: none; }
 
-/* === 6. 裝飾與動畫 === */
+/* === 6. 裝飾與動畫 (保持不變) === */
 .decor-leaf {
     position: absolute;
     width: 100px; height: 100px;
@@ -199,9 +188,6 @@ svg {
 }
 .leaf-top-left { top: 0; left: 0; transform: rotate(0deg); }
 .leaf-top-right { top: 0; right: 0; transform: scaleX(-1); }
-/* 底部葉子移到 control-panel 內部或上方，避免被遮擋，這裡先隱藏底部葉子以保持搜尋區乾淨 */
-/* .leaf-bottom-left { bottom: 80px; left: 0; transform: scaleY(-1); } */
-/* .leaf-bottom-right { bottom: 80px; right: 0; transform: scale(-1); } */
 
 .venue-border { fill: none; stroke: #E8E8E8; stroke-width: 2; }
 .stage-rect { fill: #fff; stroke: var(--theme-green); stroke-width: 1.5; rx: 5; }
@@ -216,7 +202,6 @@ svg {
 }
 .table-highlight-text { fill: var(--theme-green); }
 
-/* 路徑樣式 */
 .path-line {
     fill: none;
     stroke: var(--theme-pink);
@@ -228,9 +213,17 @@ svg {
 }
 .path-line.visible { opacity: 1; }
 
+.light-dot {
+    fill: var(--theme-green);
+    stroke: white;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 4px var(--theme-green));
+    opacity: 0;
+}
+
 .notification-toast {
     position: absolute;
-    top: 20px; /* 在 Map 區域內部的上方 */
+    top: 20px; 
     left: 50%;
     transform: translateX(-50%) scale(0.9);
     background: rgba(255, 255, 255, 0.98);
@@ -261,28 +254,20 @@ svg {
     100% { transform: scale(1); opacity: 1; stroke-width: 3; }
 }
 
-/* === RWD 手機版專用設定 === */
+/* === RWD 手機版專用設定 (簡化版) === */
 @media (max-width: 768px) {
-    /* 手機版強制滿版，移除圓角和邊框，讓視覺更像 App */
     .invitation-card { 
         width: 100%; 
         max-width: none;
-        height: 100dvh; /* 充滿螢幕 */
+        height: 100dvh; /* 確保使用動態高度 */
         border-radius: 0; 
         border: none; 
         outline: none;
         box-shadow: none;
     }
     
-    /* 稍微縮小標題區 padding 以節省空間 */
-    .header-section {
-        padding: 10px 0 5px 0;
-    }
-    
-    /* 調整搜尋框區域 padding */
-    .control-panel {
-        padding: 15px 20px 20px 20px; /* 底部多留一點給 Home bar */
-    }
+    /* 在手機上，地圖區可以稍微縮小一點，讓標題和搜尋框更穩 */
+    svg { min-height: auto; }
 }
 </style>
 </head>
@@ -333,10 +318,10 @@ svg {
             
             <image id="movingShiba" 
                 href="https://i.postimg.cc/wTL1Z0Py/Gemini-Generated-Image-ia31ppia31ppia31-removebg-preview.png" 
-                height="200" 
-                width="200" 
-                x="-100" 
-                y="-100" 
+                height="120" 
+                width="120" 
+                x="-60" 
+                y="-60" 
                 style="opacity: 0; transform-origin: center; pointer-events: none;">
                 
                 <animateMotion id="dotAnim" dur="2.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.42 0 0.58 1">
