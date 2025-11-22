@@ -29,6 +29,34 @@ body {
     overflow: hidden; /* 禁止 Body 捲動 */
 }
 
+/* === 新增/修改導航按鈕樣式 START === */
+.map-button {
+    display: inline-block;
+    padding: 8px 10px; /* 稍微縮小按鈕 */
+    background-color: var(--theme-green); 
+    color: #ffffff; 
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 14px; /* 縮小字體以適應空間 */
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.1s;
+    text-align: center;
+}
+
+.map-button:active {
+    background-color: #4a5d2c;
+    transform: translateY(1px);
+}
+
+.nav-button-wrapper {
+    flex-basis: 25%; /* 佔據 25% 空間 */
+    flex-shrink: 0;
+    text-align: left;
+}
+/* === 新增/修改導航按鈕樣式 END === */
+
 /* === 2. 卡片容器 (改用 Grid 佈局) === */
 .invitation-card {
     position: relative;
@@ -112,19 +140,26 @@ svg {
     opacity: 1;
 }
 
-/* === 5. 底部控制區 (Grid 第三列) === */
+/* === 5. 底部控制區 (搜尋框向右偏移) [替換此區] === */
 .control-panel {
-    position: relative;
-    padding: 15px 25px 25px 25px;
-    background: white;
-    border-top: 1px solid rgba(0,0,0,0.05);
-    z-index: 30;
-    box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-    /* 確保搜尋框不會被壓縮 */
-    min-height: max-content;
+    /* 關鍵修改：使用 Flexbox 讓按鈕和搜尋框並排 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    position: relative; 
+    padding: 15px 25px 25px 25px; /* 標準 padding */
+    background: white; border-top: 1px solid rgba(0,0,0,0.05); 
+    z-index: 30; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+    flex-shrink: 0; 
 }
 
-.search-container { position: relative; }
+.search-container { 
+    /* 關鍵修改：佔據 75% 空間並靠右 */
+    flex-basis: 70%;
+    flex-shrink: 0;
+    position: relative; 
+}
 
 .search-input {
     width: 100%;
@@ -179,6 +214,29 @@ svg {
     color: var(--theme-green);
 }
 .result-item:last-child { border-bottom: none; }
+
+/* === 新增的導航按鈕樣式 START === */
+.navigation-link-container {
+    text-align: center;
+    padding: 10px 0 15px; /* 在其他元素上方留白 */
+    border-bottom: 1px solid var(--theme-pink-light);
+    margin-bottom: 15px;
+}
+
+.map-button {
+    display: inline-block;
+    padding: 10px 20px;
+    /* 使用 Google Maps 較接近的顏色或主題色 */
+    background-color: var(--theme-green); 
+    color: #ffffff; /* 白色文字 */
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.1s;
+}
 
 /* === 6. 裝飾與動畫 (保持不變) === */
 .decor-leaf {
@@ -286,7 +344,7 @@ svg {
     <div class="header-section">
         <h1 class="header-title">呂尚恩 & 林怡姿</h1>
         <div class="header-subtitle">請上座</div>
-    </div>
+    </div>  
 
     <div class="map-viewport" id="mapWrapper">
         <div class="notification-toast" id="toast">
@@ -338,6 +396,13 @@ svg {
     </div>
 
     <div class="control-panel">
+
+        <div class="nav-button-wrapper">
+            <a id="mapsLink" href="#" target="_blank" class="map-button">
+                導航會場
+            </a>
+        </div>
+
         <div class="search-container">
             <div class="search-results" id="searchResults"></div>
             <input type="text" class="search-input" id="searchInput" 
@@ -350,11 +415,15 @@ svg {
 </div>
 
 <script>
+const VENUE_ADDRESS = '麗尊酒店五樓國宴廳'; // *** 請替換成你的婚宴會場地址或名稱！ ***
+const MAPS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(VENUE_ADDRESS)}`;
 // === 1. 賓客資料 ===
 const guestDataRaw = [
-    { table: "主桌", names: ["曾宗敏 舅舅", "潘亮如 舅媽", "曾美珠 大姨", "呂武南", "曾蕉治", "林添裕", "陳姿靚", "林森 爺爺", "黃桃 奶奶", "呂尚恩", "林怡姿", "豪美姑姑"] },
+    { table: "主桌", names: ["曾宗敏 舅舅", "潘亮如 舅媽", "曾美珠 大姨", "呂武南", "曾蕉治", "林添裕", "陳姿靚", "林森 爺爺", "黃桃 奶奶", "呂尚恩", "林怡姿", "林秀鳳 姑姑"] },
     { table: "大姑姑闔家", names: ["林德城 大姑丈闔家", "吳惠美 大姑姑闔家"] },
-    { table: "添裕的朋友", names: ["水電郭", "詹老師", "茂森", "張醫師", "邱源志"] }, 
+    { table: "添裕的朋友", names: ["水電郭", "詹老師闔家", "劉茂森 先生", "張醫師 闔家", "邱源志 先生"] }, 
+    { table: "添裕的親戚1", names: ["許奇夏 闔家","林耕暉 闔家","雅惠","朱老師"] }, 
+    { table: "添裕的親戚2", names: ["林秀花 姑姑闔家","林梅貴 二姑姑闔家","林東暘 叔叔闔家","小姑姑"] }, 
     { table: "姿靚的朋友", names: ["大舅媽", "四舊媽", "小鳳阿姨"] }, 
     { table: "逼零二", names: ["曾莉晴", "周靖婷", "蔡宜汝", "林建廷", "李欣育", "黃士剛", "劉又瑄"] }, 
     { table: "我的少女時代", names: ["淑靜", "貴婦文琪", "黃郁倫", "李兆家", "林巧涵", "蘇慧娟"] }, 
@@ -466,10 +535,12 @@ function handleSearch() {
     }
 }
 
-document.addEventListener('click', function(e) {
-    if (!document.querySelector('.search-container').contains(e.target)) {
-        resultsDiv.classList.remove('open');
+document.addEventListener('DOMContentLoaded', () => {
+    const mapsLink = document.getElementById('mapsLink'); // <--- 確保這行存在
+    if (mapsLink) {
+        mapsLink.href = MAPS_URL;
     }
+    drawTables();
 });
 
 // 安全隨機路徑演算法
