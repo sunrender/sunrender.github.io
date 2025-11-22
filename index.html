@@ -240,46 +240,20 @@ svg {
 
 /* RWD 手機版修正 (搜尋框固定底部) */
 @media (max-width: 768px) {
-    /* 主容器：佔滿整個手機視窗 */
     .invitation-card { 
-        width: 100%; 
-        height: 100%; 
-        border-radius: 0; 
-        display: block; 
-        padding: 0; 
+        height: 100vh; max-width: none; width: 100%; border-radius: 0; border: none; outline: none;
     }
-    
-    /* 1. 錨定頂部標題 (關鍵修正 Z-index 和背景) */
-    .header-section {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 80px; 
-        background: var(--bg-cream); /* 必須有背景色，防止透明 */
-        z-index: 9000; /* 極高 Z-index，確保壓在所有圖形上方 */
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 增加微小陰影，視覺上浮起 */
-    }
-
-    /* 2. 錨定底部搜尋框 (保持不變) */
-    .control-panel { 
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 120px; 
-        z-index: 20; 
-    }
-
-    /* 3. 中間地圖區填滿剩餘空間 (保持不變) */
     .map-viewport {
-        position: absolute;
-        top: 80px;   
-        bottom: 120px; 
-        left: 0;
-        right: 0;
-        overflow: auto;
+        position: absolute; 
+        top: 80px; left: 0; right: 0; bottom: 100px; /* 留出空間給 footer */
+        overflow-y: scroll;
     }
+    .control-panel { 
+        position: absolute; bottom: 0; left: 0; right: 0; height: 100px; 
+        padding: 10px 25px 20px 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 55; 
+        border-top: 1px solid rgba(0,0,0,0.05); 
+    }
+    .leaf-bottom-left, .leaf-bottom-right { display: none; }
 }
 </style>
 </head>
@@ -370,7 +344,7 @@ svg {
 // === 1. 賓客資料 (完整保留) ===
 const guestDataRaw = [
     { table: "主桌", names: ["曾宗敏 舅舅", "潘亮如 舅媽", "曾美珠 大姨", "呂武南", "曾蕉治", "林添裕", "陳姿靚", "林森 爺爺", "黃桃 奶奶", "呂尚恩", "林怡姿", "豪美姑姑"] },
-    { table: "大姑姑闔家", names: ["林德城 大姑丈闔家", "吳惠美 大姑姑闔家"] },
+    { table: "大姑姑闔家", names: ["林德城 大姑丈闔家"] },
     { table: "添裕的朋友", names: ["水電郭", "詹老師", "茂森", "張醫師", "邱源志"] }, 
     { table: "姿靚的朋友", names: ["大舅媽", "四舊媽", "小鳳阿姨"] }, 
     { table: "逼零二", names: ["曾莉晴", "周靖婷", "蔡宜汝", "林建廷", "李欣育", "黃士剛", "劉又瑄"] }, 
@@ -378,8 +352,8 @@ const guestDataRaw = [
     { table: "說愛你", names: ["陳安信", "莊維澤", "程慧晶", "孫瑋彤+陳書郁", "瑞成", "李昕諭（虎克）", "林家伃"] }, 
     { table: "光復高雄", names: ["陳麒", "鄭宇", "黃靖崴", "胡家瑋", "洪韻筑", "翁瑄禮", "江怡萱", "葉芮羽"] }, 
     { table: "59期A組", names: ["陳一誠", "翁嘉隆", "羅文鴻", "尤彥傑", "羅佾德", "陳金鴻"] }, 
-    { table: "河東獅夥伴", names: ["張嘉芳 學姊", "戴筌宇 帥哥", "陳芷萱 學姊", "蔣文萱 學姊", "鄭宇鈜 帥哥", "吳俞玲 學姊", "林英奇 老師", "胡慧滿 學姊"] }, 
-    { table: "曾經刑十庭", names: ["林芳如 學姊", "白惠淑 主任","黃嘉生 主任", "吳珈禎 學姊"] }, 
+    { table: "河東獅夥伴", names: ["張嘉芳", "戴筌宇", "陳芷萱", "蔣文萱", "鄭宇鈜", "吳俞玲", "林英奇", "胡慧滿"] }, 
+    { table: "曾經刑十庭", names: ["林芳如", "白惠淑", "吳珈禎"] }, 
     { table: "長庚家福_1", names: ["蕉治親友 長庚家福"] },
     { table: "長庚家福_2", names: ["蕉治親友 長庚家福"] },
     { table: "曾氏宗親會_1", names: ["曾宗敏 舅舅闔家", "郭火木 大姨丈闔家", "呂國舜 姨丈闔家", "呂宜庭"] },
@@ -393,7 +367,7 @@ const guestDataRaw = [
     { table: "法務部長官", names: ["劉慕珊 主任", "姚崇略 長官", "余彬誠 主任", "劉建志 主任", "許萃華 學姊", "甘若蘋 主任", "黃元冠 檢察長", "楊碧瑛 分署長","朱家崎 檢察長", "高碧霞 老師"] },
     { table: "法律一〇五", names: ["劉誠夫 律師", "鍾守軒 設計師", "魏禮 巨巨", "劉俊强 歐爸", "劉育杰 老闆", "謝佳君 媽咪", "蔣瑞安 律師", "廖強志 律師"] },
     { table: "歡樂三一〇", names: ["高翊銘 長官", "魏今芸 媽咪", "游慧玟 媽咪", "黃泓儒 帥哥", "黃品叡 帥哥", "邱柏彰 帥哥", "劉虹汝 老師"] },
-    { table: "刑事比人強", names: ["徐崇育 帥哥", "蘇詠群 帥哥", "鄭羽成 帥哥", "黃健銘 老帥哥", "朱子賢 老帥哥"] },
+    { table: "刑事比人強", names: ["徐崇育", "蘇詠群", "鄭羽成", "黃健銘", "朱子賢"] },
     { table: "26", names: ["小吱爸親戚(備用)"] },
     { table: "27", names: ["親友27"] }
 ];
