@@ -245,36 +245,37 @@ svg {
         width: 100%; 
         height: 100%; 
         border-radius: 0; 
-        display: block; /* 移除 Flexbox 讓絕對定位更穩定 */
+        display: block; 
         padding: 0; 
     }
     
-    /* 1. 錨定頂部標題 */
+    /* 1. 錨定頂部標題 (關鍵修正 Z-index 和背景) */
     .header-section {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
-        height: 80px; /* 固定高度 */
-        background: var(--bg-cream); 
-        z-index: 20; 
+        height: 80px; 
+        background: var(--bg-cream); /* 必須有背景色，防止透明 */
+        z-index: 9000; /* 極高 Z-index，確保壓在所有圖形上方 */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 增加微小陰影，視覺上浮起 */
     }
 
-    /* 2. 錨定底部搜尋框 */
+    /* 2. 錨定底部搜尋框 (保持不變) */
     .control-panel { 
         position: absolute;
         bottom: 0;
         left: 0;
         right: 0;
-        height: 120px; /* 固定高度 */
+        height: 120px; 
         z-index: 20; 
     }
 
-    /* 3. 地圖區填滿剩餘空間 */
+    /* 3. 中間地圖區填滿剩餘空間 (保持不變) */
     .map-viewport {
         position: absolute;
-        top: 80px;   /* 從標題下方 80px 處開始 */
-        bottom: 120px; /* 在搜尋框上方 120px 處結束 */
+        top: 80px;   
+        bottom: 120px; 
         left: 0;
         right: 0;
         overflow: auto;
