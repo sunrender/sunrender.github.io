@@ -3,9 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>婚宴座位導航 - 隨機動線版</title>
+<title>20251129 呂林府喜宴</title>
 <style>
 /* === 1. 喜帖風格色系 === */
+.map-decoration-single {
+    position: absolute;
+    bottom: -20px; /* 距離底部控制區的距離 */
+    left: 50%;
+    transform: translateX(-50%); /* 水平置中 */
+    max-width: 80%; /* 限制最大寬度 */
+    max-height: 120px; /* 限制高度，可以根據圖片大小調整 */
+    height: auto;
+    z-index: 20;
+    pointer-events: none; /* 確保不阻擋點擊地圖 */
+    opacity: 1;
+}
+
 :root {
     --theme-green: #556B2F;
     --theme-pink: #E8ADAA;
@@ -16,7 +29,7 @@
 }
 
 body {
-    font-family: "Times New Roman", "Noto Serif TC", "Microsoft JhengHei", serif;
+    font-family: "Helvetica", "Noto Serif TC", "Microsoft JhengHei", serif;
     background-color: #e0e0e0;
     margin: 0; padding: 0;
     color: var(--text-dark);
@@ -263,8 +276,8 @@ svg {
     </svg>
 
     <div class="header-section">
-        <h1 class="header-title">WEDDING SEATING</h1>
-        <div class="header-subtitle">Welcome to Our Celebration</div>
+        <h1 class="header-title">呂尚恩 & 林怡姿</h1>
+        <div class="header-subtitle">請上座</div>
     </div>
 
     <div class="map-viewport" id="mapWrapper">
@@ -290,7 +303,7 @@ svg {
             <rect x="0" y="0" width="800" height="1150" fill="#fffcf5" filter="url(#paper)" opacity="0.5"/>
             <rect x="20" y="20" width="760" height="1110" class="venue-border" rx="20" />
             <rect x="250" y="50" width="300" height="60" class="stage-rect" />
-            <text x="400" y="90" font-size="24" fill="#556B2F" text-anchor="middle" letter-spacing="4" font-family="serif">STAGE</text>
+            <text x="400" y="90" font-size="24" fill="#556B2F" text-anchor="middle" letter-spacing="4" font-family="serif">主舞台</text>
             
             <g id="tablesLayer"></g>
             <path id="guidePath" class="path-line" d="" />
@@ -310,6 +323,9 @@ svg {
                 <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" begin="dotAnim.begin" fill="freeze" />
             </image>
         </svg>
+        <img id="single-decor" class="map-decoration-single" 
+             src="https://i.postimg.cc/Dzddh7MP/tu-pian-11.png" 
+             alt="底部中央裝飾">
     </div>
 
     <div class="control-panel">
