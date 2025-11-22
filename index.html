@@ -236,6 +236,36 @@ svg {
     100% { transform: scale(1); opacity: 1; stroke-width: 3; }
 }
 
+/* RWD: 手機版調整 */
+@media (max-width: 768px) {
+    .app-container { width: 100%; height: 100%; border-radius: 0; flex-direction: column; }
+    
+    /* 修正：讓主內容區成為一個彈性柱狀容器，並確保搜尋框在底部 */
+    .main-content { 
+        height: 65%; 
+        order: 1;
+        display: flex; /* 確保內容是彈性的 */
+        flex-direction: column;
+        overflow: hidden; /* 防止地圖內容溢出並推走 footer */
+    }
+    
+    .map-viewport {
+        flex-grow: 1; /* 地圖佔據所有剩餘空間 */
+        overflow: auto; /* 保持地圖可滾動 */
+    }
+    
+    .footer-controls { 
+        flex-shrink: 0; /* 搜尋框高度固定，不被壓縮 */
+        position: relative; /* 確保它在正常的 flex 流程中 */
+    }
+    
+    .sidebar { width: 100%; height: 35%; order: 2; border-right: none; border-top: 1px solid #eee; }
+    .sidebar-header { padding: 10px; }
+    /* 這裡可以移除原本的手機隱藏設定，讓輸入框在正常流程中顯示 */
+    /* .footer-controls { display: none; } */
+}
+
+
 </style>
 </head>
 <body>
