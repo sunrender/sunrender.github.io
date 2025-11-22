@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>婚宴座位導航 - BLA版</title>
+<title>婚宴座位導航 - 隨機動線版</title>
 <style>
-/* === 1. 喜帖風格色系 (Dusty Pink & Forest Green) === */
+/* === 1. 喜帖風格色系 === */
 :root {
-    --theme-green: #556B2F;    /* 橄欖綠/森林綠 */
-    --theme-pink: #E8ADAA;     /* 莫蘭迪粉 */
+    --theme-green: #556B2F;
+    --theme-pink: #E8ADAA;
     --theme-pink-light: #F9E8E6; 
-    --bg-cream: #FFFCF5;       /* 米白紙質感 */
+    --bg-cream: #FFFCF5;
     --text-dark: #4A4A4A;
     --border-gold: #C5A065;
 }
@@ -27,7 +27,7 @@ body {
     overflow: hidden;
 }
 
-/* === 2. 喜帖卡片容器 (直式長方形) === */
+/* === 2. 卡片容器 === */
 .invitation-card {
     position: relative;
     width: 90vw;
@@ -43,11 +43,12 @@ body {
     outline: 1px solid #d0d0d0;
 }
 
-/* === 3. 頂部標題區 === */
+/* === 3. 標題區 === */
 .header-section {
     text-align: center;
     padding: 15px 0 5px 0;
     z-index: 10;
+    flex-shrink: 0;
 }
 .header-title {
     font-size: 1.5rem;
@@ -63,7 +64,7 @@ body {
     margin-top: 5px;
 }
 
-/* === 4. 地圖顯示區 (佔滿中間) === */
+/* === 4. 地圖區 === */
 .map-viewport {
     flex-grow: 1;
     position: relative;
@@ -83,7 +84,7 @@ svg {
     opacity: 0.95;
 }
 
-/* === 5. 底部搜尋控制區 (整合式) === */
+/* === 5. 底部控制區 === */
 .control-panel {
     position: relative;
     padding: 20px 25px 30px 25px;
@@ -93,11 +94,9 @@ svg {
     box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
 }
 
-.search-container {
-    position: relative;
-}
+.search-container { position: relative; }
 
-/* 搜尋框美化 */
+/* 搜尋框 */
 .search-input {
     width: 100%;
     padding: 15px 20px;
@@ -117,7 +116,7 @@ svg {
     box-shadow: 0 4px 15px rgba(232, 173, 170, 0.2);
 }
 
-/* 下拉選單 (搜尋結果) */
+/* 下拉選單 */
 .search-results {
     position: absolute;
     bottom: 100%;
@@ -151,28 +150,22 @@ svg {
 }
 .result-item:last-child { border-bottom: none; }
 
-/* === 6. 裝飾元素 (葉子 SVG) === */
+/* === 6. 裝飾與動畫 === */
 .decor-leaf {
     position: absolute;
-    width: 120px;
-    height: 120px;
-    pointer-events: none;
-    z-index: 5;
-    opacity: 0.8;
+    width: 120px; height: 120px;
+    pointer-events: none; z-index: 5; opacity: 0.8;
 }
 .leaf-top-left { top: 0; left: 0; transform: rotate(0deg); }
 .leaf-top-right { top: 0; right: 0; transform: scaleX(-1); }
 .leaf-bottom-left { bottom: 80px; left: 0; transform: scaleY(-1); }
 .leaf-bottom-right { bottom: 80px; right: 0; transform: scale(-1); }
 
-/* === 7. 地圖元素樣式 === */
 .venue-border { fill: none; stroke: #E8E8E8; stroke-width: 2; }
 .stage-rect { fill: #fff; stroke: var(--theme-green); stroke-width: 1.5; rx: 5; }
-
 .table-circle { fill: white; stroke: #dcdcdc; stroke-width: 2; transition: 0.4s; }
 .table-text { fill: #666; font-weight: 900; text-anchor: middle; dominant-baseline: central; pointer-events: none; font-family: "Microsoft JhengHei", sans-serif; }
 
-/* 啟動特效 */
 .table-highlight {
     fill: var(--theme-pink-light);
     stroke: var(--theme-pink);
@@ -181,6 +174,7 @@ svg {
 }
 .table-highlight-text { fill: var(--theme-green); }
 
+/* 路徑樣式 */
 .path-line {
     fill: none;
     stroke: var(--theme-pink);
@@ -194,13 +188,11 @@ svg {
 
 .light-dot {
     fill: var(--theme-green);
-    stroke: white;
-    stroke-width: 2;
+    stroke: white; stroke-width: 2;
     filter: drop-shadow(0 0 4px var(--theme-green));
     opacity: 0;
 }
 
-/* Toast */
 .notification-toast {
     position: absolute;
     top: 15%; left: 50%;
@@ -226,7 +218,6 @@ svg {
 .toast-name { font-size: 1.4em; color: var(--theme-green); font-weight: bold; display: block; margin-bottom: 4px; }
 .toast-table { font-size: 1.1em; color: #666; }
 
-/* Animation */
 .target-pulse { transform-origin: center; animation: pulse 2s infinite; }
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; stroke-width: 3; }
@@ -234,56 +225,28 @@ svg {
     100% { transform: scale(1); opacity: 1; stroke-width: 3; }
 }
 
-/* 關鍵修正 RWD 區塊：使用絕對定位確保搜尋框在底部可見 */
+/* RWD 手機版修正 (搜尋框固定底部) */
 @media (max-width: 768px) {
     .invitation-card { 
-        height: 100vh;
-        max-width: none;
-        width: 100%;
-        border-radius: 0;
-        border: none;
-        outline: none;
+        height: 100vh; max-width: none; width: 100%; border-radius: 0; border: none; outline: none;
     }
-
-    .header-section {
-        flex-shrink: 0;
-        z-index: 55; /* 確保標題在葉子上方 */
-    }
-    
     .map-viewport {
-        /* 關鍵修正 1: 讓地圖區域絕對定位，為底部控制區預留空間 */
         position: absolute; 
-        top: 80px; 
-        left: 0;
-        right: 0;
-        bottom: 100px; /* <--- 為 bottom control-panel 預留足夠空間 */
-        overflow-y: scroll; 
+        top: 80px; left: 0; right: 0; bottom: 100px; /* 留出空間給 footer */
+        overflow-y: scroll;
     }
-    
     .control-panel { 
-        /* 關鍵修正 2: 將搜尋框區域絕對定位錨定在底部 */
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 100px; /* 固定高度，確保可見 */
-        padding: 10px 25px 20px 25px;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
-        z-index: 55; 
-        /* 由於原本的 padding/border-top 是在 control-panel 上，我們在此處維持其樣式 */
+        position: absolute; bottom: 0; left: 0; right: 0; height: 100px; 
+        padding: 10px 25px 20px 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); z-index: 55; 
         border-top: 1px solid rgba(0,0,0,0.05); 
     }
-
-    .leaf-bottom-left, .leaf-bottom-right { 
-        display: none; 
-    }
+    .leaf-bottom-left, .leaf-bottom-right { display: none; }
 }
 </style>
 </head>
 <body>
 
 <div class="invitation-card">
-    
     <svg class="decor-leaf leaf-top-left" viewBox="0 0 100 100">
         <path d="M0,0 Q40,10 50,50 T80,90 M10,10 L20,15 M20,25 L30,30 M30,40 L40,45" stroke="#556B2F" stroke-width="2" fill="none" opacity="0.3"/>
         <circle cx="50" cy="50" r="2" fill="#E8ADAA" opacity="0.6"/>
@@ -325,30 +288,33 @@ svg {
             </defs>
 
             <rect x="0" y="0" width="800" height="1150" fill="#fffcf5" filter="url(#paper)" opacity="0.5"/>
-
             <rect x="20" y="20" width="760" height="1110" class="venue-border" rx="20" />
-            
             <rect x="250" y="50" width="300" height="60" class="stage-rect" />
             <text x="400" y="90" font-size="24" fill="#556B2F" text-anchor="middle" letter-spacing="4" font-family="serif">STAGE</text>
             
             <g id="tablesLayer"></g>
             <path id="guidePath" class="path-line" d="" />
             
-            <circle id="movingDot" r="10" class="light-dot">
+            <image id="movingShiba" 
+                href="https://i.postimg.cc/wTL1Z0Py/Gemini-Generated-Image-ia31ppia31ppia31-removebg-preview.png" 
+                height="200" 
+                width="200" 
+                x="-100" 
+                y="-100" 
+                style="opacity: 0; transform-origin: center; pointer-events: none;">
+                
                 <animateMotion id="dotAnim" dur="2.5s" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.42 0 0.58 1">
                     <mpath href="#guidePath" />
                 </animateMotion>
-                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" begin="dotAnim.begin" fill="freeze" />
                 
-            </circle>
+                <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="2.5s" begin="dotAnim.begin" fill="freeze" />
+            </image>
         </svg>
     </div>
 
     <div class="control-panel">
         <div class="search-container">
-            <div class="search-results" id="searchResults">
-                </div>
-            
+            <div class="search-results" id="searchResults"></div>
             <input type="text" class="search-input" id="searchInput" 
                    placeholder="請輸入姓名查詢座位..." 
                    oninput="handleSearch()" 
@@ -363,15 +329,15 @@ svg {
 const guestDataRaw = [
     { table: "主桌", names: ["曾宗敏 舅舅", "潘亮如 舅媽", "曾美珠 大姨", "呂武南", "曾蕉治", "林添裕", "陳姿靚", "林森 爺爺", "黃桃 奶奶", "呂尚恩", "林怡姿", "豪美姑姑"] },
     { table: "大姑姑闔家", names: ["林德城 大姑丈闔家"] },
-    { table: "小吱爸朋友", names: ["水電郭", "詹老師", "茂森", "張醫師", "邱源志"] }, 
-    { table: "小吱媽朋友", names: ["大舅媽", "四舊媽", "小鳳阿姨"] }, 
-    { table: "小吱大學同學", names: ["曾莉晴", "周靖婷", "蔡宜汝", "林建廷", "李欣育", "黃士剛", "劉又瑄"] }, 
-    { table: "小吱高中同學", names: ["淑靜", "貴婦文琪", "黃郁倫", "李兆家", "林巧涵", "蘇慧娟"] }, 
-    { table: "小吱同期_1", names: ["陳安信", "莊維澤", "程慧晶", "孫瑋彤+陳書郁", "瑞成", "李昕諭（虎克）", "林家伃"] }, 
-    { table: "小吱同期_2", names: ["陳麒", "鄭宇", "黃靖崴", "胡家瑋", "洪韻筑", "翁瑄禮", "江怡萱", "葉芮羽"] }, 
-    { table: "小吱同期_3", names: ["陳一誠", "翁嘉隆", "羅文鴻", "尤彥傑", "羅佾德", "陳金鴻"] }, 
-    { table: "小吱同事_1", names: ["張嘉芳", "戴筌宇", "陳芷萱", "蔣文萱", "鄭宇鈜", "吳俞玲", "林英奇", "胡慧滿"] }, 
-    { table: "小吱同事_2", names: ["林芳如", "白惠淑", "吳珈禎"] }, 
+    { table: "添裕的朋友", names: ["水電郭", "詹老師", "茂森", "張醫師", "邱源志"] }, 
+    { table: "姿靚的朋友", names: ["大舅媽", "四舊媽", "小鳳阿姨"] }, 
+    { table: "逼零二", names: ["曾莉晴", "周靖婷", "蔡宜汝", "林建廷", "李欣育", "黃士剛", "劉又瑄"] }, 
+    { table: "我的少女時代", names: ["淑靜", "貴婦文琪", "黃郁倫", "李兆家", "林巧涵", "蘇慧娟"] }, 
+    { table: "說愛你", names: ["陳安信", "莊維澤", "程慧晶", "孫瑋彤+陳書郁", "瑞成", "李昕諭（虎克）", "林家伃"] }, 
+    { table: "光復高雄", names: ["陳麒", "鄭宇", "黃靖崴", "胡家瑋", "洪韻筑", "翁瑄禮", "江怡萱", "葉芮羽"] }, 
+    { table: "59期A組", names: ["陳一誠", "翁嘉隆", "羅文鴻", "尤彥傑", "羅佾德", "陳金鴻"] }, 
+    { table: "河東獅夥伴", names: ["張嘉芳", "戴筌宇", "陳芷萱", "蔣文萱", "鄭宇鈜", "吳俞玲", "林英奇", "胡慧滿"] }, 
+    { table: "曾經刑十庭", names: ["林芳如", "白惠淑", "吳珈禎"] }, 
     { table: "長庚家福_1", names: ["蕉治親友 長庚家福"] },
     { table: "長庚家福_2", names: ["蕉治親友 長庚家福"] },
     { table: "曾氏宗親會_1", names: ["曾宗敏 舅舅闔家", "郭火木 大姨丈闔家", "呂國舜 姨丈闔家", "呂宜庭"] },
@@ -402,12 +368,11 @@ guestData.sort((a, b) => a.name.localeCompare(b.name, "zh-TW"));
 const tableCoords = {
     "二位姑姑家": {x: 190, y: 250}, "曾氏宗親會_1": {x: 190, y: 380}, "河東獅長官": {x: 190, y: 510}, "不正經學長": {x: 190, y: 640}, "歡樂三一〇": {x: 190, y: 770}, "刑事比人強": {x: 190, y: 900}, "曾氏宗親會_2": {x: 80, y: 300},
     "主桌": {x: 400, y: 200}, "大姑姑闔家": {x: 300, y: 300}, "法務部長官": {x: 300, y: 430}, "瘋狂四一六": {x: 300, y: 560}, "六＿十＿期": {x: 300, y: 690}, "六十期唉組": {x: 300, y: 820}, "法律一〇五": {x: 300, y: 950},
-    "小吱爸親戚_1": {x: 500, y: 300}, "野貓團": {x: 500, y: 430}, "59期": {x: 500, y: 560}, "A組同學": {x: 500, y: 690}, "高中同學": {x: 500, y: 820}, "大學同學": {x: 500, y: 950},
-    "小吱媽朋友": {x: 610, y: 250}, "小吱爸朋友": {x: 610, y: 380}, "法院老同事": {x: 610, y: 510}, "中院同事": {x: 610, y: 640}, "大寶媽朋友_1": {x: 610, y: 770}, "大寶媽朋友_2": {x: 610, y: 900},
-    "小吱爸親戚_2": {x: 720, y: 300}
+    "添裕的親戚1": {x: 500, y: 300}, "說愛你": {x: 500, y: 430}, "光復高雄": {x: 500, y: 560}, "59期A組": {x: 500, y: 690}, "我的少女時代": {x: 500, y: 820}, "台大逼零二": {x: 500, y: 950},
+    "姿靚的朋友": {x: 610, y: 250}, "添裕的朋友": {x: 610, y: 380}, "河東獅夥伴": {x: 610, y: 510}, "曾經刑十庭": {x: 610, y: 640}, "長庚家福_1": {x: 610, y: 770}, "長庚家福_2": {x: 610, y: 900},
+    "添裕的親戚2": {x: 720, y: 300}
 };
 
-// === 3. 初始化 ===
 const tablesLayer = document.getElementById('tablesLayer');
 const resultsDiv = document.getElementById('searchResults');
 const guidePath = document.getElementById('guidePath');
@@ -447,16 +412,10 @@ function drawTables() {
     }
 }
 
-// 處理搜尋 (下拉選單邏輯)
+// 處理搜尋
 function handleSearch() {
     const filter = searchInput.value;
     resultsDiv.innerHTML = "";
-    
-    if (filter === "") {
-        // 如果沒輸入，可以選擇隱藏，或顯示「請輸入姓名」
-        // 這裡設定為：若點擊輸入框但沒文字，顯示所有名單(或前20個)
-        // 為了效能，這裡只顯示符合的前 10 筆，或者全部
-    }
     
     let count = 0;
     let seen = new Set();
@@ -464,7 +423,6 @@ function handleSearch() {
     guestData.forEach(g => {
         if (g.name.includes(filter) && !seen.has(g.name + g.table)) {
             seen.add(g.name + g.table);
-            
             const item = document.createElement("div");
             item.className = "result-item";
             item.innerText = g.name;
@@ -474,49 +432,102 @@ function handleSearch() {
         }
     });
 
-    if (count > 0) {
+    if (count > 0 || filter === "") {
         resultsDiv.classList.add('open');
     } else {
         resultsDiv.classList.remove('open');
     }
 }
 
-// 點擊外部關閉選單
 document.addEventListener('click', function(e) {
     if (!document.querySelector('.search-container').contains(e.target)) {
         resultsDiv.classList.remove('open');
     }
 });
 
+// ==========================================
+// 3. 安全隨機路徑演算法 (Safe Random Path)
+// ==========================================
+function getSafeRandomPath(targetX, targetY) {
+    const startX = 400; // 入口 X
+    const startY = 1130; // 入口 Y
+    let d = `M ${startX} ${startY}`;
+
+    // 計算垂直距離
+    const distY = startY - targetY;
+    
+    // 隨機漫步參數
+    const steps = 4; // 切成 4 段來走，模擬走路擺動
+    let curX = startX;
+    let curY = startY;
+
+    for (let i = 1; i <= steps; i++) {
+        const progress = i / steps;
+        // 計算下一段的目標 Y
+        const nextY = startY - (distY * progress);
+        
+        // 隨機 X：嚴格限制在中央走道安全區 (370 ~ 430)
+        // 這樣保證不會撞到左右兩邊的桌子 (桌子邊緣約在 344 和 456)
+        const jitter = (Math.random() * 20) - 10; // 限制擺動範圍在 +/- 10 像素
+        let nextX = 400 + jitter;
+        // 如果是最後一步 (i === steps)，我們要回到或接近目標的 X 軸位置準備轉彎
+        // 或者我們保持在走道，等最後一個 curve 再轉進去
+        if (i === steps) {
+            // 保持在走道中心附近，準備最後轉彎
+            nextX = 400; 
+        }
+
+        // 使用貝茲曲線連接，讓走路軌跡平滑 (S型)
+        const cp1x = curX;
+        const cp1y = (curY + nextY) / 2;
+        const cp2x = nextX;
+        const cp2y = (curY + nextY) / 2;
+
+        d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${nextX} ${nextY}`;
+
+        curX = nextX;
+        curY = nextY;
+    }
+
+    // 最後一段：轉彎進桌子 (Final Turn)
+    // 此時我們在 (curX, targetY) 附近，也就是走道上，跟桌子同一排
+    // 我們畫一個帶有隨機弧度的線連到桌子中心，避免看起來像直線穿牆
+    
+    // 隨機決定弧度是往上拱還是往下拱，增加趣味
+    const arcHeight = (Math.random() > 0.5 ? 40 : -40);
+    const cpFinalX = (curX + targetX) / 2; // 控制點 X 在中間
+    const cpFinalY = targetY + arcHeight;  // 控制點 Y 稍微偏移
+    
+    d += ` Q ${cpFinalX} ${cpFinalY}, ${targetX} ${targetY}`;
+
+    return d;
+}
+
+
 // 選擇賓客
 function selectGuest(name, tableId) {
     const target = tableCoords[tableId];
     if (!target) return;
 
-    // 1. 更新 UI
-    searchInput.value = name; // 將名字填入搜尋框
-    resultsDiv.classList.remove('open'); // 關閉選單
+    searchInput.value = name;
+    resultsDiv.classList.remove('open');
     
-    // 2. 重置地圖
     document.querySelectorAll('.table-circle').forEach(c => c.classList.remove('table-highlight', 'target-pulse'));
     document.querySelectorAll('.table-text').forEach(t => t.classList.remove('table-highlight-text'));
     toast.classList.remove('show');
 
-    // 3. 顯示 Toast
     toastName.innerText = name;
     toastTable.innerText = `請入席 ${tableId}`;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 4000);
 
-    // 4. 動畫
-    const startX = 400; const startY = 1130;
-    const cp1y = startY - 150;
-    const pathD = `M ${startX} ${startY} L ${startX} ${startY-50} C ${startX} ${cp1y}, ${startX} ${target.y}, ${target.x} ${target.y}`;
+    // 使用新的隨機路徑生成函式
+    const pathD = getSafeRandomPath(target.x, target.y);
     
     guidePath.setAttribute("d", pathD);
     guidePath.classList.add("visible");
 
-    const dot = document.getElementById('movingDot');
+    const dot = document.getElementById('movingShiba');
     dot.style.display = 'none';
     void dot.offsetWidth;
     dot.style.display = 'block';
